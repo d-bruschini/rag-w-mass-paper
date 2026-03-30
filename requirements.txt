@@ -3,4 +3,5 @@ faiss-cpu
 numpy
 langchain-text-splitters
 langchain-community
+tiktoken
 pypdf

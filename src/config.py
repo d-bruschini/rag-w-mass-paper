@@ -8,11 +8,11 @@ if not OPENAI_API_KEY:
 # Data
 PDF_PATH = os.getenv("PDF_PATH", "../data/W_mass_paper.pdf") # Path to the W mass paper (PDF)
 EMBEDDINGS_PATH = os.getenv("EMBEDDINGS_PATH", "../data/W_mass_embeddings.pkl") # Path to embeddings file
-CHUNK_SIZE = 2000
-CHUNK_OVERLAP = 300
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 150
 TOP_K = 20
 
 # Chatbot (OpenAI API)
-MODEL = os.getenv("MODEL", "gpt-5.4-2026-03-05")  # Default to the current model if not set
+MODEL = os.getenv("MODEL", "gpt-4.1-mini")  # Default to the current model if not set
 TEMPERATURE = 0 # Controls the randomness of the LLM output (0 for deterministic, higher for more creative responses)
 MAX_CONTEXT_LENGTH = 5  # Number of Q&A pairs to keep in context

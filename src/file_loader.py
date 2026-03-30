@@ -30,7 +30,7 @@ def load_and_split_pdf(pdf_path=PDF_PATH):
     logging.info(f"Loaded {len(docs)} pages from the PDF.")
 
     # Split the document into chunks using the configured separators
-    splitter = RecursiveCharacterTextSplitter(
+    splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", " ", ""]
