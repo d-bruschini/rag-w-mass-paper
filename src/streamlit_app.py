@@ -13,11 +13,11 @@ client = OpenAI(api_key=None) # picks key from environmental variable
 # Initialize LLM and chunks (and prevent from reloading everytime)
 @st.cache_resource
 def start_rag():
-    chunks, pages, index, title = load_data()
+    split_docs, index = load_data()
     llm = initialize_llm(client)
-    return llm, chunks, pages, index, title
+    return llm, split_docs, index
 
-rag, chunks, pages, index, title = start_rag()
+rag, split_docs, index = start_rag()
 
 # Title
 st.title("RAG System for Scientific Document Analysis (CMS W Boson Mass)")
@@ -41,7 +41,7 @@ if prompt := st.chat_input("Question: "):
         st.markdown(prompt)
 
     # Call your RAG pipeline
-    retrieved_information = create_context(prompt, index, chunks, pages, title)
+    retrieved_information = create_context(prompt, index, split_docs)
     response = rag.response(prompt, retrieved_information, streaming=True)
 
     # iterate through the stream of events and display llm response
