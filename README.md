@@ -88,6 +88,16 @@ python3 main.py
 
 You can now interact with the chatbot directly from the command line.
 
+### Streamlit Interface (Optional)
+
+For a more interactive experience, you can also run the chatbot using Streamlit:
+
+```
+streamlit run streamlit_app.py
+```
+
+This will launch a local web interface in your browser.
+
 ### Regenerating Embeddings
 
 If you change the parameters in config.py, especially chunk_size and overlap, or you wish to use a different paper, you need to regenerate the embeddings. The embeddings store the vector representations of the text chunks, and if the chunks change the embeddings need to be regenerated to ensure accurate retrieval. To do so, use the functions in embeddings.py:

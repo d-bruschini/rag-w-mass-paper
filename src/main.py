@@ -1,13 +1,18 @@
 import os
 import logging
 from openai import OpenAI
-from chatbot import Chatbot
+from llm import LLM
 from file_loader import load_and_split_pdf
 from embeddings import create_embeddings, save_embeddings, load_embeddings
-from retrieval import build_index
-from config import EMBEDDINGS_PATH
+from retrieval import build_index, create_context
+from config import EMBEDDINGS_PATH, MAX_CONTEXT_LENGTH
 
 logging.basicConfig(level=logging.INFO)
+
+def maintain_context(context):
+    if len(context) > MAX_CONTEXT_LENGTH * 2:  # 2 for question and answer pairs
+        context = context[-(MAX_CONTEXT_LENGTH * 2):]
+    return context
 
 def format_pages(pages):
     roman_map = {
@@ -39,17 +44,24 @@ def load_data():
     index = build_index(embeddings)
     return chunks, pages, index, title
 
-def initialize_chatbot(client, index, chunks, pages, title):
-    logging.info("Initializing chatbot...")
-    return Chatbot(client, index, chunks, pages, title)
+def initialize_llm(client):
+    logging.info("Initializing LLM...")
+    return LLM(client)
 
-def start_chatbot(chatbot):
+def start_chatbot(llm, chunks, pages, index, title):
     print("Chatbot is now running. Type 'exit' or 'quit' to end the session.")
+    context = []
     while True:
         question = input("Question: ")
         if question.lower() in ["exit", "quit"]:
             break
-        chatbot.chat(question)
+        retrieved_information = create_context(question, index, chunks, pages, title)
+        response = llm.response(question, retrieved_information)
+        context = maintain_context(context)
+        response_content = response.choices[0].message.content.strip() if response.choices else "Sorry, I couldn't generate an answer."
+        print(f"Chatbot: {response_content}")
+        context.append({"role":"user", "content": question})
+        context.append({"role":"assistant", "content": response_content})
 
 if __name__ == "__main__":
     if not os.getenv("OPENAI_API_KEY"):
@@ -57,5 +69,5 @@ if __name__ == "__main__":
 
     client = OpenAI(api_key=None) # picks key from environmental variable
     chunks, pages, index, title = load_data()
-    chatbot = initialize_chatbot(client, index, chunks, pages, title)
-    start_chatbot(chatbot)
+    llm = initialize_llm(client)
+    start_chatbot(llm, chunks, pages, index, title)

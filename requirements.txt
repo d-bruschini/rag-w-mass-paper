@@ -5,3 +5,4 @@ langchain-text-splitters
 langchain-community
 tiktoken
 pypdf
+streamlit
