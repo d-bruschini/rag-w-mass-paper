@@ -1,7 +1,7 @@
 # RAG System for Scientific Document Analysis (CMS W Boson Mass)
 
 ## Overview
-This project implements a **Retrieval-Augmented Generation (RAG)** pipeline to interpret the [**latest W mass paper by the CMS experiment**](https://arxiv.org/abs/2412.13872). It enables users to query a complex high-energy physics paper in natural language and receive context-grounded, receive context-grounded, human-readable explanations with page-level source references.
+This project implements a **Retrieval-Augmented Generation (RAG)** pipeline to interpret the [**latest W mass paper by the CMS experiment**](https://arxiv.org/abs/2412.13872v1). It enables users to query a complex high-energy physics paper in natural language and receive context-grounded, receive context-grounded, human-readable explanations with page-level source references.
 
 The system implements a full RAG pipeline:
 
@@ -98,14 +98,25 @@ streamlit run streamlit_app.py
 
 This will launch a local web interface in your browser.
 
-### Regenerating Embeddings
+### Regenerating Chunks and Embeddings
 
-If you change the parameters in config.py, especially chunk_size and overlap, or you wish to use a different paper, you need to regenerate the embeddings. The embeddings store the vector representations of the text chunks, and if the chunks change the embeddings need to be regenerated to ensure accurate retrieval. To do so, use the functions in embeddings.py:
+If you change the parameters in config.py, especially chunk_size and overlap, or you wish to use a different paper, you need to regenerate the chunks and the embeddings. The document is split into chunks for information retrieval, so that only the relevant part of the document is passed to the LLM for answer generation. The embeddings store the vector representations of the text chunks, meaning that the embeddings need to be regenerated if the chunks change, to ensure accurate retrieval. To split the file, use the function in file_loader.py:
+
+* load_and_split_pdf(pdf_path): Takes the PDF file path and produces the splitting of the document (it returns a list of split documents, i.e. chunks which also store metadata, the text chunks can be retrieved from this as explained below)
+* save_split_docs(split_docs, path): Saves the split_docs to a pickle file for later use.
+
+For the embeddings, use the functions in embeddings.py:
 
 * create_embeddings(texts): Takes the chunked text and generates embeddings.
 * save_embeddings(embeddings, path): Saves the embeddings to a pickle file for later use.
 
-In config.py, you can modify parameters such as chunk_size, overlap, and the path to the embeddings file. Be sure to adjust these settings according to your needs.
+Note: create_embeddings(texts) takes a list of strings as input, while the output of load_and_split_pdf(pdf_path) is a list of split documents. To retrieve the text, you can do something like:
+
+```
+texts = [chunk.page_content for chunk in split_docs]
+```
+
+In config.py, you can modify parameters such as chunk_size, overlap, and the path to the PDF or chunks file and the embeddings file. Be sure to adjust these settings according to your needs.
 
 ### Other parameters
 

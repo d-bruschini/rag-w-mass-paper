@@ -6,7 +6,7 @@ if not OPENAI_API_KEY:
     raise ValueError("OpenAI API key not found. Please set it as an environment variable.")
 
 # Data
-PDF_PATH = os.getenv("PDF_PATH", "../data/W_mass_paper.pdf") # Path to the W mass paper (PDF)
+FILE_PATH = os.getenv("FILE_PATH", "../data/W_mass_chunks.pkl") # Path to the scientific splitted document (by default W mass splitted PDF). This can either be a PDF file, in which case the document will be split, or a pkl files already with the split documents
 EMBEDDINGS_PATH = os.getenv("EMBEDDINGS_PATH", "../data/W_mass_embeddings.pkl") # Path to embeddings file
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 150
