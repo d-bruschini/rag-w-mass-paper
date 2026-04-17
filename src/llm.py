@@ -5,7 +5,7 @@ from embeddings import create_embeddings
 
 def qa_prompt(context, question):
     return f"""
-You are a research assistant. Use ONLY the context below to answer the question. Add citations to the answer.
+You are a research assistant. Use ONLY the context below to answer the question. If there is not enough context to answer the question, say so. Add citations to the answer.
 Context:
 {context}
 
