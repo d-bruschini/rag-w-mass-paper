@@ -1,4 +1,6 @@
 import os
+import signal
+import time
 from main import load_data, initialize_llm, maintain_history
 from openai import OpenAI
 from retrieval import create_context
@@ -21,6 +23,9 @@ rag, split_docs, index = start_rag()
 
 # Title
 st.title("RAG System for Scientific Document Analysis (CMS W Boson Mass)")
+
+# Message to user
+st.write("Click the \'Close Chatbot\' button to terminate the chatbot")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -60,3 +65,9 @@ if prompt := st.chat_input("Question: "):
     # handle history to pass to LLM (at the moment it is just stored, not passed)
     history = list(st.session_state.messages)
     history = maintain_history(history)
+
+# Button to close chatbot (temporary solution)
+if st.button("Close Chatbot"):
+    st.write("Terminating chatbot. Close this window after receiving error message.")
+    time.sleep(2) # Added so that the message above can be read by the user
+    os.kill(os.getpid(), signal.SIGKILL)
