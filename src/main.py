@@ -5,14 +5,14 @@ from llm import LLM
 from file_loader import load_and_split_pdf
 from embeddings import create_embeddings, save_embeddings, load_embeddings
 from retrieval import build_index, create_context
-from config import EMBEDDINGS_PATH, MAX_CONTEXT_LENGTH
+from config import EMBEDDINGS_PATH, MAX_HISTORY_LENGTH
 
 logging.basicConfig(level=logging.INFO)
 
-def maintain_context(context):
-    if len(context) > MAX_CONTEXT_LENGTH * 2:  # 2 for question and answer pairs
-        context = context[-(MAX_CONTEXT_LENGTH * 2):]
-    return context
+def maintain_history(history):
+    if len(history) > MAX_HISTORY_LENGTH * 2:  # 2 for question and answer pairs
+        history = history[-(MAX_HISTORY_LENGTH * 2):]
+    return history
 
 def load_data():
     logging.info("Loading and processing paper...")
@@ -36,18 +36,18 @@ def initialize_llm(client):
 
 def start_chatbot(llm, split_docs, index):
     print("Chatbot is now running. Type 'exit' or 'quit' to end the session.")
-    context = []
+    history = [] # Chat history is currently stored, but not used as information for the response generation. Should you want to do this, pass the 'history=history' argument to llm.response
     while True:
         question = input("Question: ")
         if question.lower() in ["exit", "quit"]:
             break
         retrieved_information = create_context(question, index, split_docs)
+        history = maintain_history(history)
         response = llm.response(question, retrieved_information)
-        context = maintain_context(context)
         response_content = response.choices[0].message.content.strip() if response.choices else "Sorry, I couldn't generate an answer."
         print(f"Chatbot: {response_content}")
-        context.append({"role":"user", "content": question})
-        context.append({"role":"assistant", "content": response_content})
+        history.append({"role":"user", "content": question})
+        history.append({"role":"assistant", "content": response_content})
 
 if __name__ == "__main__":
     if not os.getenv("OPENAI_API_KEY"):

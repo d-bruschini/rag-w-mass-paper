@@ -15,4 +15,4 @@ TOP_K = 20
 # Chatbot (OpenAI API)
 MODEL = os.getenv("MODEL", "gpt-4.1-mini")  # Default to the current model if not set
 TEMPERATURE = 0 # Controls the randomness of the LLM output (0 for deterministic, higher for more creative responses)
-MAX_CONTEXT_LENGTH = 5  # Number of Q&A pairs to keep in context
+MAX_HISTORY_LENGTH = 5  # Number of Q&A pairs to keep in history

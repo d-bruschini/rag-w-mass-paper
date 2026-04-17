@@ -1,5 +1,5 @@
 import os
-from main import load_data, initialize_llm, maintain_context
+from main import load_data, initialize_llm, maintain_history
 from openai import OpenAI
 from retrieval import create_context
 import streamlit as st
@@ -59,4 +59,4 @@ if prompt := st.chat_input("Question: "):
 
     # handle history to pass to LLM (at the moment it is just stored, not passed)
     history = list(st.session_state.messages)
-    history = maintain_context(history)
+    history = maintain_history(history)
