@@ -8,10 +8,18 @@ def format_page(page):
     
     return roman_map.get(page - 1, page - 1)
 
+def normalize(embeddings):
+    # Normalize embeddings to 1 and use float32 precision (normalize_L2 works for dtype float32. Also, no change was observed when the precision is reduced from float64 in the default configuration)
+    embeddings_f32 = np.array(embeddings, dtype=np.float32)
+    faiss.normalize_L2(embeddings_f32)
+    return embeddings_f32
+
 def build_index(embeddings):
     dim = embeddings.shape[1]
     index = faiss.IndexFlatL2(dim)
-    index.add(embeddings)
+    # Normalize embeddings to 1 (and use float32)
+    embeddings_f32 = normalize(embeddings)
+    index.add(embeddings_f32)
     return index
 
 def search_index(index, query_embedding, top_k=3):
@@ -20,8 +28,10 @@ def search_index(index, query_embedding, top_k=3):
 
 def create_context(query, index, docs):
     # Process query
-    query_emb = create_embeddings([query])[0]
-    top_idx = search_index(index, query_emb, top_k=TOP_K)
+    query_emb = create_embeddings([query])
+    # Normalize query embedding to 1 (and use float32)
+    query_emb_f32 = normalize(query_emb)
+    top_idx = search_index(index, query_emb_f32[0], top_k=TOP_K)
     title = docs[0].metadata.get("title","unknown")
     context = f"Title: {title}\n\n"
     for i in top_idx:

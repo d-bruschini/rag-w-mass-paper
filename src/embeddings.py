@@ -25,7 +25,7 @@ def create_embeddings(texts):
             input=texts
         )
         embeddings = [e.embedding for e in response.data]
-        return np.array(embeddings)
+        return np.array(embeddings, dtype=np.float32)
     except Exception as e:
         raise RuntimeError(f"Error while generating embeddings: {e}")
 
